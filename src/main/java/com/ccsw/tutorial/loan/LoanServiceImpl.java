@@ -121,7 +121,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     private void validateClientLimit(Long id, LoanDto dto) {
-        LoanSpecification client = new LoanSpecification(new SearchCriteria("client.id", ":", dto.getGame().getId()));
+        LoanSpecification client = new LoanSpecification(new SearchCriteria("client.id", ":", dto.getClient().getId()));
         LoanSpecification start = new LoanSpecification(new SearchCriteria("startDate", "<=", dto.getEndDate()));
         LoanSpecification end = new LoanSpecification(new SearchCriteria("endDate", ">=", dto.getStartDate()));
 
