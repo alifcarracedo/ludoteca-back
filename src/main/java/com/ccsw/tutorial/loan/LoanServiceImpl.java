@@ -1,11 +1,11 @@
-package com.ccsw.ludoteca_2_backend.loan;
+package com.ccsw.tutorial.loan;
 
-import com.ccsw.ludoteca_2_backend.client.ClientService;
-import com.ccsw.ludoteca_2_backend.common.criteria.SearchCriteria;
-import com.ccsw.ludoteca_2_backend.game.GameService;
-import com.ccsw.ludoteca_2_backend.loan.model.Loan;
-import com.ccsw.ludoteca_2_backend.loan.model.LoanDto;
-import com.ccsw.ludoteca_2_backend.loan.model.LoanSearchDto;
+import com.ccsw.tutorial.client.ClientService;
+import com.ccsw.tutorial.common.criteria.SearchCriteria;
+import com.ccsw.tutorial.game.GameService;
+import com.ccsw.tutorial.loan.model.Loan;
+import com.ccsw.tutorial.loan.model.LoanDto;
+import com.ccsw.tutorial.loan.model.LoanSearchDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -94,11 +93,6 @@ public class LoanServiceImpl implements LoanService {
 
     }
 
-    private boolean isWeekend(LocalDate date) {
-        DayOfWeek day = date.getDayOfWeek();
-        return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
-    }
-
     public void validateDates(LoanDto dto) {
         if (dto.getEndDate().isBefore(dto.getStartDate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fecha de devolución anterior a fecha de préstamo");
@@ -107,9 +101,6 @@ public class LoanServiceImpl implements LoanService {
         long days = ChronoUnit.DAYS.between(dto.getStartDate(), dto.getEndDate());
         if (days > 14) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Los préstamos no pueden exceder de 14 días");
-        }
-        if (isWeekend(dto.getStartDate()) || isWeekend(dto.getEndDate())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Las fechas no pueden caer en fin de semana");
         }
     }
 
@@ -130,7 +121,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     private void validateClientLimit(Long id, LoanDto dto) {
-        LoanSpecification client = new LoanSpecification(new SearchCriteria("client.id", ":", dto.getClient().getId()));
+        LoanSpecification client = new LoanSpecification(new SearchCriteria("client.id", ":", dto.getGame().getId()));
         LoanSpecification start = new LoanSpecification(new SearchCriteria("startDate", "<=", dto.getEndDate()));
         LoanSpecification end = new LoanSpecification(new SearchCriteria("endDate", ">=", dto.getStartDate()));
 
